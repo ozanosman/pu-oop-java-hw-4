@@ -4,8 +4,10 @@ import game.GameBoard;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class SwingRenderer extends JFrame
+public class SwingRenderer extends JFrame implements MouseListener
 {
     GameBoard gameBoard;
 
@@ -20,8 +22,40 @@ public class SwingRenderer extends JFrame
         this.setVisible(true);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        gameBoard.randomGreenTileGenerator();
-        gameBoard.randomBlueTileGenerator();
+        this.gameBoard.StartTileCoordinates();
+        this.gameBoard.ImpassableTileCoordinates();
+        this.gameBoard.GPSTileCoordinates();
+        this.gameBoard.UnexploredTileCoordinates();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e)
+    {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e)
+    {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e)
+    {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e)
+    {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e)
+    {
+
     }
 
     @Override
@@ -31,10 +65,7 @@ public class SwingRenderer extends JFrame
         {
             for (int col = 0; col < 8; col++)
             {
-                this.gameBoard.renderRedTile(g, row, col);
-                this.gameBoard.renderGreenTile(g);
-                this.gameBoard.renderBlueTile(g);
-                this.gameBoard.renderStartTile(g, row, col);
+                this.gameBoard.renderTile(g, row, col);
             }
         }
     }
