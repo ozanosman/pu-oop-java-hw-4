@@ -21,4 +21,12 @@ public class YellowTile extends Tile
         g.setColor(this.outlineColor);
         g.drawRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
     }
+
+    public boolean isMoveValid(int moveRow, int moveCol)
+    {
+        int rowCoefficient = Math.abs(moveRow - this.row);
+        int colCoefficient = Math.abs(moveCol - this.col);
+
+        return rowCoefficient == 0 && colCoefficient == 1 || rowCoefficient == 1 && colCoefficient == 0;
+    }
 }

@@ -21,4 +21,10 @@ public class BlueTile extends Tile
         g.setColor(this.outlineColor);
         g.drawRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
     }
+
+    @Override
+    public boolean isMoveValid(int moveRow, int moveCol)
+    {
+        return false;
+    }
 }
