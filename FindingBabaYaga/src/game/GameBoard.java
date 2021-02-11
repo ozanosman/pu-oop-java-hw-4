@@ -4,6 +4,11 @@ import tile.*;
 
 import java.awt.*;
 
+/**
+ * Клас методи за изпълнението на логиката в приложението.
+ *
+ * @author Озан Осман
+ */
 public class GameBoard
 {
     public final int TILE_SIDE_COUNT = 8;
@@ -17,6 +22,11 @@ public class GameBoard
     private int GPS_TILE = 8;
     private int UNEXPLORED_TILE = 50;
 
+    public boolean isDead = false;
+
+    /**
+     * Метод задаващ координати за визуализиране на елемента "Tile", от който започва движението.
+     */
     public void startTileCoordinates()
     {
         do
@@ -29,13 +39,16 @@ public class GameBoard
                 continue;
             }
 
-            tileCollection[row][col] = new YellowTile(row, col, new Color(255, 242, 204), new Color(218, 189, 100));
+            this.tileCollection[row][col] = new Tile(row, col, new Color(255, 242, 204), new Color(218, 189, 100), null);
 
             START_TILE--;
         }
         while(START_TILE != 0);
     }
 
+    /**
+     * Метод задаващ координати за визуализиране на елементи "Tile", от които е непроходимо.
+     */
     public void impassableTileCoordinates()
     {
         do
@@ -48,13 +61,16 @@ public class GameBoard
                 continue;
             }
 
-            tileCollection[row][col] = new BlueTile(row, col, new Color(0, 80, 239), new Color(5, 36, 194));
+            this.tileCollection[row][col] = new Tile(row, col, new Color(0, 80, 239), new Color(5, 36, 194), null);
 
             IMPASSABLE_TILE--;
         }
         while(IMPASSABLE_TILE != 0);
     }
 
+    /**
+     * Метод задаващ координати за визуализиране на елементи "Tile", в които се намира баба Яга.
+     */
     public void gPSTileCoordinates()
     {
         do
@@ -67,13 +83,16 @@ public class GameBoard
                 continue;
             }
 
-            tileCollection[row][col] = new GreenTile(row, col, new Color(213, 232, 212), new Color(166, 200, 150));
+            this.tileCollection[row][col] = new Tile(row, col, new Color(213, 232, 212), new Color(166, 200, 150), null);
 
             GPS_TILE--;
         }
         while(GPS_TILE != 0);
     }
 
+    /**
+     * Метод задаващ координати за визуализиране на елементи "Tile", които са неизследвани.
+     */
     public void unexploredTileCoordinates()
     {
         do
@@ -86,13 +105,20 @@ public class GameBoard
                 continue;
             }
 
-            tileCollection[row][col] = new RedTile(row, col, new Color(248, 206, 204), new Color(192, 99, 95));
+            this.tileCollection[row][col] = new Tile(row, col, new Color(248, 206, 204), new Color(192, 99, 95), null);
 
             UNEXPLORED_TILE--;
         }
         while(UNEXPLORED_TILE != 0);
     }
 
+    /**
+     * Метод съдържащ инстанция на клас за визуализиране на елементи "Tile".
+     *
+     * @param g     обект на супер класа за всички графични контексти
+     * @param row   ред на елемента
+     * @param col   колона на елемента
+     */
     public void renderTile(Graphics g, int row, int col)
     {
         if (this.hasBoardTile(row, col))
@@ -102,6 +128,13 @@ public class GameBoard
         }
     }
 
+    /**
+     * Метод, който контролира елемента "Tile", започващ движението върху игралната дъска.
+     *
+     * @param row   ред на елемента
+     * @param col   колона на елемента
+     * @param tile     инстанция на клас
+     */
     public void moveStartTile(int row, int col, Tile tile)
     {
         int initialRow = tile.getRow();
@@ -109,72 +142,136 @@ public class GameBoard
 
         tile.moveTile(row, col);
 
-        // int number = (int) (Math.random() * 101);
+        decideStartTileFate(row, col, tile);
 
-        // if (number <= 80)
-        // {
-        //     this.tileCollection[tile.getRow()][tile.getCol()] = this.selectedTile;
-        //     this.tileCollection[initialRow][initialCol] = null;
-        // }
-        // else
-        // {
-        //     Tile impassableTile = new BlueTile(row, col, new Color(0, 80, 239), new Color(5, 36, 194));
-        //     this.tileCollection[impassableTile.getRow()][impassableTile.getCol()] = impassableTile;
-        // }
-
-        this.tileCollection[tile.getRow()][tile.getCol()] = this.selectedTile;
         this.tileCollection[initialRow][initialCol] = null;
 
         this.selectedTile = null;
     }
 
+    /**
+     * Метод, който връща елемент от обекта за елементи "Tile".
+     *
+     * @param row   ред на елемента
+     * @param col   колона на елемента
+     */
     public Tile getBoardTile(int row, int col)
     {
         return this.tileCollection[row][col];
     }
 
+    /**
+     * Метод, който проверява и връща елемент от обекта за елементи "Tile", ако те съществуват.
+     *
+     * @param row   ред на елемента
+     * @param col   колона на елемента
+     */
     public boolean hasBoardTile(int row, int col)
     {
         return this.getBoardTile(row, col) != null;
     }
 
+    /**
+     * Метод, който връща координати на игралната дъска в единични числа.
+     *
+     * @param coordinates   координати
+     */
     public int getBoardCoordinates(int coordinates)
     {
         return coordinates / Tile.TILE_SIZE;
     }
 
+    /**
+     * Метод, който проверява и връща елемент от обекта за елементи "Tile", ако то е от определения цвят.
+     *
+     * @param row   ред на елемента
+     * @param col   колона на елемента
+     */
     public boolean isImpassable(int row,int col)
     {
-        if (hasBoardTile(row,col))
+        Tile tile = getBoardTile(row,col);
+
+        if (this.hasBoardTile(row, col))
         {
-            Tile tile = getBoardTile(row,col);
             return tile.getColor().equals(new Color(0, 80, 239));
         }
         return false;
     }
 
+    /**
+     * Метод, който проверява и връща елемент от обекта за елементи "Tile", ако то е от определения цвят и ако баба Яга е открита.
+     *
+     * @param row   ред на елемента
+     * @param col   колона на елемента
+     */
     public boolean isBabaYagaFound(int row,int col)
     {
         int babaYagaHouse = 1;
 
-        if (hasBoardTile(row,col))
+        Tile tile = getBoardTile(row,col);
+
+        if (this.hasBoardTile(row, col))
         {
-            Tile tile = getBoardTile(row,col);
             return tile.getColor().equals(new Color(213, 232, 212)) && babaYagaHouse == getBabaYagaCoordinates();
         }
         return false;
     }
 
+    /**
+     * Метод, който решава съдбата на елемента "Tile", започващ движението.
+     *
+     * @param row   ред на елемента
+     * @param col   колона на елемента
+     * @param tile     инстанция на клас
+     */
+    private void decideStartTileFate(int row, int col, Tile tile)
+    {
+        int chance = (int) (Math.random() * 101);
+
+        if (chance <= 80)
+        {
+            if (this.tileCollection[row][col].getColor().equals(new Color(213, 232, 212)))
+            {
+                this.tileCollection[tile.getRow()][tile.getCol()] = new Tile(row, col, new Color(255, 242, 204), new Color(218, 189, 100), "͡❛_>͡❛");
+            }
+            else
+            {
+                this.tileCollection[tile.getRow()][tile.getCol()] = new Tile(row, col, new Color(255, 242, 204), new Color(218, 189, 100), "͡❛‿>͡❛");
+            }
+        }
+        else
+        {
+            if (this.tileCollection[row][col].getColor().equals(new Color(248, 206, 204)))
+            {
+                this.tileCollection[tile.getRow()][tile.getCol()] = new Tile(tile.getRow(), tile.getCol(), new Color(0, 80, 239), new Color(5, 36, 194), "͡*_>͡*");
+                isDead = true;
+            }
+            else
+            {
+                this.tileCollection[tile.getRow()][tile.getCol()] = new Tile(row, col, new Color(255, 242, 204), new Color(218, 189, 100), "͡❛_>͡❛");
+            }
+        }
+    }
+
+    /**
+     * Метод, който избира и връща координати на баба Яга.
+     */
     private int getBabaYagaCoordinates()
     {
         return Math.random() > 0.13 ? 0: 1;
     }
 
+    /**
+     * Метод, който избира и връща координати на елемента "Tile", започващ движението.
+     */
     private int getStartTileCoordinates()
     {
         return Math.random() > 0.5 ? 0: 7;
     }
 
+    /**
+     * Метод, който избира и връща координати на останалите елементи "Tile".
+     */
     private int getTileCoordinates()
     {
         return (int) (Math.random() * 8);

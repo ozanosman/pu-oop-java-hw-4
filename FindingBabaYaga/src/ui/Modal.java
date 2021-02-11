@@ -1,9 +1,26 @@
 package ui;
 
-import javax.swing.*;
+import game.GameBoard;
+import renderer.SwingRenderer;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+/**
+ * Клас наследяващ JDialog, съдържащ конструктори и методи за визуализиране на прозореца "Modal".
+ *
+ * @author Озан Осман
+ */
 public class Modal extends JDialog
 {
+    /**
+     * Конструктор съдържащ характеристиките за създаване на прозореца "Modal".
+     *
+     * @param parent    родителят, който JFrame ще го използва
+     * @param title     заглавие на прозореца
+     * @param message   съобщение в прозореца
+     */
     public Modal(JFrame parent, String title, String message)
     {
         super(parent, title, true);
@@ -14,38 +31,71 @@ public class Modal extends JDialog
         panel.add(label);
         getContentPane().add(panel);
 
-        pack();
-        setResizable(false);
-        setLocationRelativeTo(null);
-        setVisible(true);
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.pack();
+        this.setResizable(false);
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
+    /**
+     * Конструктор съдържащ характеристиките за създаване на прозореца "Modal" с бутон.
+     *
+     * @param message   съобщение в прозореца
+     * @param parent    родителят, който JFrame ще го използва
+     * @param title     заглавие на прозореца
+     */
     public Modal(String message, JFrame parent, String title)
     {
         super(parent, title, true);
 
         JPanel panel = new JPanel();
         JLabel label = new JLabel(message);
-        JButton button = new JButton("Нова игра?");
+        JButton buttonRestart = new JButton("Нова игра?");
 
         panel.add(label);
-        panel.add(button);
+        panel.add(buttonRestart);
         getContentPane().add(panel);
 
-        pack();
-        setResizable(false);
-        setLocationRelativeTo(null);
-        setVisible(true);
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        buttonRestart.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                parent.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+                parent.setVisible(false);
+                GameBoard gameBoard = new GameBoard();
+                SwingRenderer renderer = new SwingRenderer(gameBoard);
+            }
+        });
+
+        this.setSize(250, 100);
+        this.setResizable(false);
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
+    /**
+     * Метод за инстанция на прозореца "Modal".
+     *
+     * @param parent    родителят, който JFrame ще го използва
+     * @param title     заглавие на прозореца
+     * @param message   съобщение в прозореца
+     */
     public static void renderMessage(JFrame parent, String title, String message)
     {
         new Modal(parent, title, message);
     }
 
-    public static void renderGameOver(JFrame parent, String title, String message)
+    /**
+     * Метод за инстанция на прозореца "Modal" с бутон.
+     *
+     * @param parent    родителят, който JFrame ще го използва
+     * @param title     заглавие на прозореца
+     * @param message   съобщение в прозореца
+     */
+    public static void renderEndGame(JFrame parent, String title, String message)
     {
         new Modal(message, parent, title);
     }
